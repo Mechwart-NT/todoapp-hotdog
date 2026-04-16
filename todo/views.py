@@ -17,7 +17,7 @@ def handle_todos(request):
             return Response(serializer.data)
         return Response(serializer.errors)
 
-@api_view(["DELETE", "PATCH"])
+@api_view(["DELETE", "PATCH", "PUT"])
 def handle_todos_by_id(request, pk):
     try:
         todo = TodoItem.objects.get(id=pk)
@@ -34,4 +34,9 @@ def handle_todos_by_id(request, pk):
             serializer.save()
             return Response(serializer.data)
         return Response(serialzer.errors)
-    
+    elif request.method == "PUT":
+        serializer = TodoItemSerializer(todo, data=request.data, partial=False)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
