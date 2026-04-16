@@ -17,12 +17,21 @@ def handle_todos(request):
             return Response(serializer.data)
         return Response(serializer.errors)
 
-@api_view(["DELETE"])
+@api_view(["DELETE", "PATCH"])
 def handle_todos_by_id(request, pk):
+    try:
+        todo = TodoItem.objects.get(id=pk)
+    except TodoItem.DoesNotExist:
+        return Response({"message": f"Can't find TodoItem with id {pk}!"})
+    
     if request.method == "DELETE":
-        try:
-            todo = TodoItem.objects.get(id=pk)
-            todo.delete()
-            return Response({"message": f"TodoItem with id {pk} deleted!"})
-        except TodoItem.DoesNotExist:
-            return Response({"message": f"Can't find TodoItem with id {pk}!"})
+        todo.delete()
+        return Response({"message": f"TodoItem with id {pk} deleted!"})
+    
+    elif request.method == "PATCH":
+        serializer = TodoItemSerializer(todo, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serialzer.errors)
+    
