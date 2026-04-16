@@ -1,0 +1,13 @@
+from rest_framework.decorators import api_view
+from .serializers import TodoItemSerializer
+from .models import TodoItem
+from rest_framework.response import Response
+
+@api_view(["GET","POST"])
+def handle_todos(request):
+    if request.method == "GET":
+        todos = TodoItem.objects.all()
+        serialized = TodoItemSerializer(todos, many=True)
+        return Response(serialized.data)
+
+    return Response({"message":"Alma"})
