@@ -10,4 +10,9 @@ def handle_todos(request):
         serialized = TodoItemSerializer(todos, many=True)
         return Response(serialized.data)
 
-    return Response({"message":"Alma"})
+    elif request.method == "POST":
+        serializer = TodoItemSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
